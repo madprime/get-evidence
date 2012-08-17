@@ -87,8 +87,10 @@ def genome_metadata(gff_input, genome_stats_file, progresstracker):
 
     # 'called_num' counts total positions called, while 'match_num' only counts
     # positions which match a chromosome ID in the ref_genome data.
+    # 'called_var' counts nonreference records matching a chr ID in ref_genome.
     called_num = 0
     match_num = 0
+    called_var = 0
 
     # 'ref_all_num' and 'ref_nogap_num' increment total and placeable genome 
     # sizes (respectively) when new chromosomes are seen (for example, the 
@@ -122,6 +124,8 @@ def genome_metadata(gff_input, genome_stats_file, progresstracker):
                             or "chr" + record.seqname[3:] in ref_genome)
         if is_in_ref_genome:
             match_num += dist
+            if not record.feature == "REF":
+                called_var += 1
 
         # If this is a new chromosome: (1) Add it to our chromosomes list,
         # (2) increase genome size variables (ref_all_num and ref_nogap_num)
@@ -146,6 +150,7 @@ def genome_metadata(gff_input, genome_stats_file, progresstracker):
     
     progresstracker.metadata['called_num'] = called_num
     progresstracker.metadata['match_num'] = match_num
+    progresstracker.metadata['called_var'] = called_var
     progresstracker.metadata['ref_all_num'] = ref_all_num
     progresstracker.metadata['ref_nogap_num'] = ref_nogap_num
 
